@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "my-ubuntu-desktop.fullname" . }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 6901
+      protocol: TCP
+      {{- if eq .Values.service.type "NodePort" }}
+      {{- if .Values.service.nodePort }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- else }}
+      nodePort: {{ randInt 30000 32767 }} # Generate a random nodePort in the valid range
+      {{- end }}
+      {{- end }}
+  selector:
+    app: {{ include "my-ubuntu-desktop.name" . }}
+

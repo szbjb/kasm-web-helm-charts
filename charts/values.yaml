@@ -1,0 +1,85 @@
+# Global settings
+global:
+  imageRegistry: ""  # Docker image registry
+  imagePullSecrets: []  # Docker registry secret names
+  timezone: "Asia/Shanghai"
+
+# KasmWeb settings
+kasmweb:
+  image:
+    registry: "swr.cn-southwest-2.myhuaweicloud.com"
+    repository: "kubeode/kasmweb/ubuntu-jammy-desktop"
+    tag: "1.15.0"
+    pullPolicy: IfNotPresent
+  vncPassword: "Szbjb123."  # VNC password
+  lang: "zh_CN.UTF-8"
+  language: "zh_CN:zh"
+  locale: "zh_CN.UTF-8"
+  timezone: "Asia/Shanghai"
+  shmSize: "6512Mi"
+
+# Service settings
+service:
+  type: NodePort
+  port: 6901
+  targetPort: 6901
+  nodePort: null  # Let Kubernetes assign a random port if using NodePort
+
+# Ingress settings
+ingress:
+  enabled: true
+  name: kasmweb-ingress
+  hostname: demo.cn  # Replace with your domain
+  annotations: {}
+  tls:
+    enabled: false
+    cert: ""
+    certKey: ""
+
+# Persistent Volume Claim (PVC)
+pvc:
+  enabled: true
+  size: "10Gi"
+  storageClass: "openebs-hostpath"  # Use default SC
+  accessMode: ReadWriteOnce
+
+# Pod settings
+pod:
+  replicas: 1
+  resources: 
+    requests:
+      memory: "2Gi"
+      cpu: "1"
+    limits:
+      memory: "4Gi"
+      cpu: "2"
+  affinity: {}
+
+# Autoscaling
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# PodSecurityContext and ContainerSecurityContext
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+  sysctls: []
+
+containerSecurityContext:
+  enabled: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  runAsNonRoot: true
+  privileged: false
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+

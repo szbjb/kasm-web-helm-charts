@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kasm-web.fullname" . }}
+  labels:
+    app: {{ include "kasm-web.name" . }}
+spec:
+  replicas: {{ .Values.pod.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "kasm-web.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "kasm-web.name" . }}
+    spec:
+      containers:
+        - name: kasm-web
+          image: "{{ .Values.kasmweb.image.registry }}/{{ .Values.kasmweb.image.repository }}:{{ .Values.kasmweb.image.tag }}"
+          imagePullPolicy: {{ .Values.kasmweb.image.pullPolicy }}
+          ports:
+            - name: vnc
+              containerPort: {{ .Values.service.port }}
+          env:
+            - name: VNC_PW
+              value: "{{ .Values.kasmweb.vncPassword }}"
+            - name: LANG
+              value: "{{ .Values.kasmweb.lang }}"
+            - name: LANGUAGE
+              value: "{{ .Values.kasmweb.language }}"
+            - name: LC_ALL
+              value: "{{ .Values.kasmweb.locale }}"
+            - name: TZ
+              value: "{{ .Values.kasmweb.timezone }}"
+          resources:
+            requests:
+              memory: {{ .Values.pod.resources.requests.memory }}
+              cpu: {{ .Values.pod.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.pod.resources.limits.memory }}
+              cpu: {{ .Values.pod.resources.limits.cpu }}
+          securityContext:
+            runAsUser: {{ .Values.containerSecurityContext.runAsUser }}
+            runAsGroup: {{ .Values.containerSecurityContext.runAsGroup }}
+            runAsNonRoot: {{ .Values.containerSecurityContext.runAsNonRoot }}
+            readOnlyRootFilesystem: {{ .Values.containerSecurityContext.readOnlyRootFilesystem }}
+
